@@ -18,7 +18,7 @@ public class LimitsLow
 
 [CreateAssetMenu(fileName = "GameLimitsData", menuName = "ScriptableObjects/GameLimitsScriptableObject", order = 1)]
 [System.Serializable]
-public class GameLimitsScriptableObject : ScriptableObject
+public class GameLimits : ScriptableObject
 {
     public Limits speed;
     public Limits stamina;

@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627d1e3e3e1ff33408b154f793afeb16, type: 3}
-  m_Name: GameSpeed_Slow
+  m_Script: {fileID: 11500000, guid: e1bdc0cbfff2b83498d8abefad234630, type: 3}
+  m_Name: GameLimits_Normal
   m_EditorClassIdentifier: 
   speed:
-    min: 2
-    max: 4
+    min: 4
+    max: 6
   stamina:
     min: 50
     max: 100
   mobility:
-    min: 0
-    max: 0.3
+    min: 0.3
+    max: 0.6

@@ -153,7 +153,8 @@ MonoBehaviour:
   unwalkableMask:
     serializedVersion: 2
     m_Bits: 64
-  gameLimits: {fileID: 11400000, guid: e539c2f50275b784b86f9f54c8439b25, type: 2}
+  gameLimits: {fileID: 11400000, guid: ea36b52c485e19d44a774af9d6218b1e, type: 2}
+  gameEvents: {fileID: 11400000, guid: 0c4c87b96f076134ca1049fb71f67354, type: 2}
 --- !u!114 &1006191456015788373
 MonoBehaviour:
   m_ObjectHideFlags: 0

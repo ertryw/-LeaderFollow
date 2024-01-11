@@ -6,7 +6,7 @@ public class UnitStats
     public float Stamina { get; set; }
     public float Mobility { get; set; }
 
-    public UnitStats(GameLimitsScriptableObject gameLimits)
+    public UnitStats(GameLimits gameLimits)
     {
         Speed = Random.Range(gameLimits.speed.min, gameLimits.speed.max);
         Stamina = Random.Range(gameLimits.stamina.min, gameLimits.stamina.max);

@@ -6,7 +6,9 @@ public class UnitController : MonoBehaviour
     [SerializeField]
     private LayerMask unwalkableMask;
     [SerializeField]
-    private GameLimitsScriptableObject gameLimits;
+    private GameLimits gameLimits;
+    [SerializeField]
+    private GameEvents gameEvents;
 
     private bool leader;
     private bool found;
@@ -17,6 +19,7 @@ public class UnitController : MonoBehaviour
     private Rigidbody rb;
     private Color color;
     private new Renderer renderer;
+    private float baseStamina;
 
     private void Awake()
     {
@@ -25,6 +28,7 @@ public class UnitController : MonoBehaviour
         color = renderer.material.color;
         unit = GetComponent<UnitBase>();
         stats = new UnitStats(gameLimits);
+        baseStamina = stats.Stamina;
     }
 
     private void OnEnable()
@@ -43,16 +47,19 @@ public class UnitController : MonoBehaviour
     {
         leader = false;
         found = false;
-        renderer.material.color = color;
         rb.mass = 10;
+
+        renderer.material.color = color;
     }
 
     public void SwitchToLeader()
     {
         leader = true;
         found = false;
-        renderer.material.color = Color.yellow;
         rb.mass = 100000;
+
+        renderer.material.color = Color.yellow;
+        gameEvents.ChangeStamina(stats.Stamina);
     }
 
     public void OnPathFound(Vector3[] path)
@@ -78,6 +85,18 @@ public class UnitController : MonoBehaviour
             return;
 
         unit.StartPathFinding(transform.position, target); 
+    }
+
+    private void Move()
+    {
+        if (leader && stats.Stamina > 0.0f)
+        {
+            stats.Stamina -= 0.1f;
+            gameEvents.ChangeStamina(stats.Stamina);
+        }
+
+        if (stats.Stamina > 0.0f)
+            rb.velocity = transform.right * stats.Speed;
     }
 
     IEnumerator FollowPath(Vector3[] path)
@@ -114,10 +133,10 @@ public class UnitController : MonoBehaviour
             transform.rotation = quaternion;
 
             if (Quaternion.Angle(transform.rotation, lookRotation) < 10)
-                rb.velocity = transform.right * stats.Speed;
+                Move();
             else
                 rb.velocity *= 0.9f;
-
+      
             yield return new WaitForFixedUpdate();
         }
 
@@ -150,5 +169,11 @@ public class UnitController : MonoBehaviour
         {
             rb.velocity = Vector3.zero;
         }
+    }
+
+    private void Update()
+    {
+        if (!leader && stats.Stamina < baseStamina)
+            stats.Stamina += 2 * Time.deltaTime;
     }
 }
