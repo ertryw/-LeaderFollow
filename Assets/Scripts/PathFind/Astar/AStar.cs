@@ -1,44 +1,38 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static IPathfinding;
 
-public class PathFind : MonoBehaviour
+
+public class AStar : IPathfinding
 {
     private bool running;
     private GridMesh grid;
-    public Vector3[] Path { get; set; }
-
-    public delegate void OnPathFound();
     public event OnPathFound onPathFound;
 
-    private void Awake()
+    public AStar(GridMesh gridMesh)
     {
-        grid = FindFirstObjectByType<GridMesh>();
+        grid = gridMesh;
     }
 
-    public void StartPathFinding(Vector3 target)
+    public void Start(Vector3 startPos, Vector3 targetPos)
     {
         if (running == true)
             return;
 
-        running = false;
-        StopCoroutine("FindPath");
-        StartCoroutine(FindPath(transform.position, target));
+        FindPath(startPos, targetPos);
     }
 
-    IEnumerator FindPath(Vector3 startPos, Vector3 targetPos)
+    private void FindPath(Vector3 startPos, Vector3 targetPos)
     {
-        running = true;
         Node startNode = grid.NodeFromWorldPoint(startPos);
         Node targetNode = grid.NodeFromWorldPoint(targetPos);
 
         List<Node> openSet = new List<Node>();
         HashSet<Node> closedSet = new HashSet<Node>();
         openSet.Add(startNode);
- 
 
+        running = true;
         while (openSet.Count > 0)
         {
             Node node = openSet[0];
@@ -56,8 +50,7 @@ public class PathFind : MonoBehaviour
 
             if (node == targetNode)
             {
-                RetracePath(startNode, targetNode);
-                onPathFound?.Invoke();
+                onPathFound?.Invoke(RetracePath(startNode, targetNode));
                 break;
             }
 
@@ -82,10 +75,9 @@ public class PathFind : MonoBehaviour
         }
 
         running = false;
-        yield return null;
     }
 
-    void RetracePath(Node startNode, Node endNode)
+    Vector3[] RetracePath(Node startNode, Node endNode)
     {
         List<Node> path = new List<Node>();
         Node currentNode = endNode;
@@ -97,6 +89,6 @@ public class PathFind : MonoBehaviour
         }
 
         path.Reverse();
-        Path = path.Select(x => x.WorldPosition).ToArray();
+        return path.Select(x => x.WorldPosition).ToArray();
     }
 }

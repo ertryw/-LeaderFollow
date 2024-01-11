@@ -2,9 +2,8 @@ using UnityEngine;
 
 public class LeaderController : MonoBehaviour
 {
-    private Camera camera;
+    private Camera mainCamera;
     private UnitBase unit;
-    private PathFind pathFinding;
     private UnitController unitController;
 
     public delegate void OnLead(Vector3 position);
@@ -14,9 +13,8 @@ public class LeaderController : MonoBehaviour
     void Awake()
     {
         unit = GetComponent<UnitBase>();
-        pathFinding = GetComponent<PathFind>();
         unitController = GetComponent<UnitController>();        
-        camera = Camera.main;
+        mainCamera = Camera.main;
     }
 
     private void OnEnable()
@@ -40,11 +38,11 @@ public class LeaderController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit))
-                pathFinding.StartPathFinding(new Vector3(hit.point.x, 4.0f, hit.point.z));
+                unit.StartPathFinding(transform.position, new Vector3(hit.point.x, 4.0f, hit.point.z));
         }
     }
 

@@ -1,44 +1,41 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
 public class UnitController : MonoBehaviour
 {
-    [NonSerialized]
-    public PathFind pathfinding;
-    private int targetIndex;
-    private Rigidbody rb;
-    private Renderer renderer;
-    private Color color;
-    private bool found;
-    Vector3 direction;
-
-    public LayerMask unwalkableMask;
+    [SerializeField]
+    private LayerMask unwalkableMask;
+    [SerializeField]
     public float speed;
-    public bool leader;
+
+    private bool leader;
+    private bool found;
+    private bool coroutineRunning = false;
+    private int targetIndex;
+
+    private UnitBase unit;
+    private Rigidbody rb;
+    private Color color;
+    private new Renderer renderer;
 
     private void Awake()
     {
-        pathfinding = GetComponent<PathFind>();
         rb = GetComponent<Rigidbody>();
-        renderer = gameObject.GetComponent<Renderer>();
-    }
-
-    private void Start()
-    {
-        color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+        renderer = GetComponent<Renderer>();
+        color = renderer.material.color;
+        unit = GetComponent<UnitBase>();
     }
 
     private void OnEnable()
     {
         LeaderController.onLead += TargetNodeChange;
-        pathfinding.onPathFound += OnPathFound;
+        unit.AddPathFound(OnPathFound);
     }
 
     private void OnDisable()
     {
         LeaderController.onLead -= TargetNodeChange;
-        pathfinding.onPathFound -= OnPathFound;
+        unit.RemovePathFound(OnPathFound);
     }
 
     public void SwitchToDefault()
@@ -55,49 +52,56 @@ public class UnitController : MonoBehaviour
         renderer.material.color = Color.yellow;
     }
 
-    public void OnPathFound()
+    public void OnPathFound(Vector3[] path)
     {
-        Debug.Log("move" + " " + gameObject.name);
+        if (coroutineRunning || path.Length == 0)
+        {
+            StopAllCoroutines();
+            coroutineRunning = false;
+        }
 
-        targetIndex = 0;
-        StopCoroutine("FollowPath");
-        StartCoroutine("FollowPath");
+        if (path.Length == 0)
+            return;
+        
+        IEnumerator followPath = FollowPath(path);
+        StartCoroutine(followPath);         
     }
 
 
-    private void TargetNodeChange(Vector3 position)
+    private void TargetNodeChange(Vector3 target)
     {
         if (leader)
             return;
 
         found = false;
-        pathfinding.StartPathFinding(position); 
+        unit.StartPathFinding(transform.position, target); 
     }
 
-    IEnumerator FollowPath()
+    IEnumerator FollowPath(Vector3[] path)
     {
-        if (pathfinding.Path.Length == 0)
-        {
-            StopCoroutine("FollowPath");
-            yield return null;
-        }
+        targetIndex = 0;
+        coroutineRunning = true;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
 
-        Vector3 currentWaypoint = pathfinding.Path[0];
+        Vector3 currentWaypoint = path[0];
+
         while (true)
         {
            
             if (Vector3.Distance(currentWaypoint, transform.position) < 0.55f)
             {
                 targetIndex++;
-                if (targetIndex >= pathfinding.Path.Length)
+                if (targetIndex >= path.Length)
                 {
                     rb.velocity = Vector3.zero;
-                    yield break;
+                    break;
                 }
-                currentWaypoint = pathfinding.Path[targetIndex];
+                currentWaypoint = path[targetIndex];
             }
-      
-            direction = (currentWaypoint - transform.position).normalized;
+
+            Vector3 direction = (currentWaypoint - transform.position).normalized;
+
             direction = Quaternion.Euler(0, -90, 0) * direction;
             direction.y = 0; 
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), 0.4f);
@@ -105,6 +109,8 @@ public class UnitController : MonoBehaviour
             rb.velocity = transform.right * speed;
             yield return new WaitForFixedUpdate();
         }
+
+        coroutineRunning = false;
     }
 
     private void OnCollisionEnter(Collision collision)

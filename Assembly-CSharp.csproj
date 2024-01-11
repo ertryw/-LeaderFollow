@@ -59,13 +59,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Units\LeaderController.cs" />
-    <Compile Include="Assets\Scripts\Astar\PathFind.cs" />
+    <Compile Include="Assets\Scripts\PathFind\Astar\GridMesh.cs" />
+    <Compile Include="Assets\Scripts\PathFind\Astar\AStar.cs" />
     <Compile Include="Assets\Scripts\UI\ChooseLeaderPanel.cs" />
-    <Compile Include="Assets\Scripts\Astar\GridMesh.cs" />
-    <Compile Include="Assets\Scripts\Astar\Node.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Units\UnitBase.cs" />
     <Compile Include="Assets\Scripts\Units\UnitController.cs" />
+    <Compile Include="Assets\Scripts\PathFind\Astar\Node.cs" />
+    <Compile Include="Assets\Scripts\PathFind\IPathfinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
