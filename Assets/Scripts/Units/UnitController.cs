@@ -6,14 +6,14 @@ public class UnitController : MonoBehaviour
     [SerializeField]
     private LayerMask unwalkableMask;
     [SerializeField]
-    public float speed;
+    private GameLimitsScriptableObject gameLimits;
 
     private bool leader;
     private bool found;
     private bool coroutineRunning = false;
-    private int targetIndex;
-
+    
     private UnitBase unit;
+    private UnitStats stats;
     private Rigidbody rb;
     private Color color;
     private new Renderer renderer;
@@ -24,6 +24,7 @@ public class UnitController : MonoBehaviour
         renderer = GetComponent<Renderer>();
         color = renderer.material.color;
         unit = GetComponent<UnitBase>();
+        stats = new UnitStats(gameLimits);
     }
 
     private void OnEnable()
@@ -43,6 +44,7 @@ public class UnitController : MonoBehaviour
         leader = false;
         found = false;
         renderer.material.color = color;
+        rb.mass = 10;
     }
 
     public void SwitchToLeader()
@@ -50,6 +52,7 @@ public class UnitController : MonoBehaviour
         leader = true;
         found = false;
         renderer.material.color = Color.yellow;
+        rb.mass = 100000;
     }
 
     public void OnPathFound(Vector3[] path)
@@ -62,7 +65,8 @@ public class UnitController : MonoBehaviour
 
         if (path.Length == 0)
             return;
-        
+
+        found = false;
         IEnumerator followPath = FollowPath(path);
         StartCoroutine(followPath);         
     }
@@ -73,17 +77,17 @@ public class UnitController : MonoBehaviour
         if (leader)
             return;
 
-        found = false;
         unit.StartPathFinding(transform.position, target); 
     }
 
     IEnumerator FollowPath(Vector3[] path)
     {
-        targetIndex = 0;
+
         coroutineRunning = true;
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
+        int targetIndex = 0;
         Vector3 currentWaypoint = path[0];
 
         while (true)
@@ -94,6 +98,7 @@ public class UnitController : MonoBehaviour
                 targetIndex++;
                 if (targetIndex >= path.Length)
                 {
+                    found = true;
                     rb.velocity = Vector3.zero;
                     break;
                 }
@@ -104,9 +109,15 @@ public class UnitController : MonoBehaviour
 
             direction = Quaternion.Euler(0, -90, 0) * direction;
             direction.y = 0; 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), 0.4f);
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            Quaternion quaternion = Quaternion.Slerp(transform.rotation, lookRotation, stats.Mobility);
+            transform.rotation = quaternion;
 
-            rb.velocity = transform.right * speed;
+            if (Quaternion.Angle(transform.rotation, lookRotation) < 10)
+                rb.velocity = transform.right * stats.Speed;
+            else
+                rb.velocity *= 0.9f;
+
             yield return new WaitForFixedUpdate();
         }
 
@@ -137,7 +148,7 @@ public class UnitController : MonoBehaviour
 
         if (found)
         {
-            rb.velocity *= 0.1f;
+            rb.velocity = Vector3.zero;
         }
     }
 }

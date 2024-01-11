@@ -360,10 +360,12 @@
 "Assets/Scripts/PathFind/Astar/GridMesh.cs"
 "Assets/Scripts/PathFind/Astar/Node.cs"
 "Assets/Scripts/PathFind/IPathfinding.cs"
+"Assets/Scripts/Scriptables/GameLimitsScriptableObject.cs"
 "Assets/Scripts/UI/ChooseLeaderPanel.cs"
 "Assets/Scripts/Units/LeaderController.cs"
 "Assets/Scripts/Units/UnitBase.cs"
 "Assets/Scripts/Units/UnitController.cs"
+"Assets/Scripts/Units/UnitStats.cs"
 -langversion:9.0
 
 /deterministic

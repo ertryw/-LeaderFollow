@@ -9,7 +9,6 @@ public class LeaderController : MonoBehaviour
     public delegate void OnLead(Vector3 position);
     public static event OnLead onLead;
 
-    // Start is called before the first frame update
     void Awake()
     {
         unit = GetComponent<UnitBase>();
