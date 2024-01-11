@@ -1,19 +1,19 @@
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class GridMesh : MonoBehaviour
 {
+    [SerializeField]
+    private LayerMask unwalkableMask;
+    [SerializeField]
+    private Vector2 gridWorldSize;
+    [SerializeField]
+    private float nodeRadius;
+
     private Node[,] grid;
     private float nodeDiameter;
     private int gridSizeX;
     private int gridSizeY;
-
-    public LayerMask unwalkableMask;
-    public Vector2 gridWorldSize;
-    public float nodeRadius;
-    public List<Node> path;
-    public Transform player;
 
     void Awake()
     {
@@ -29,7 +29,6 @@ public class GridMesh : MonoBehaviour
 
         if (grid != null)
         {
-
             foreach (Node n in grid)
             {
                 Gizmos.color = (n.Walkable) ? Color.white : Color.red;
@@ -49,20 +48,9 @@ public class GridMesh : MonoBehaviour
             {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
                 bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkableMask));
-
-                grid[x, y] = new Node(walkable, !walkable, worldPoint, new Vector2Int(x, y), nodeRadius);
+                grid[x, y] = new Node(walkable, worldPoint, new Vector2Int(x, y), nodeRadius);
             }
         }
-    }
-
-    public Node NotWalkableFromWorld(Vector3 position)
-    {
-        Node node = NodeFromWorldPoint(position);
-
-        if (node != null)
-            node.Walkable = false;
-
-        return node;
     }
 
     public List<Node> GetNeighbours(Node node)
@@ -89,26 +77,6 @@ public class GridMesh : MonoBehaviour
         return neighbours;
     }
 
-    public Vector3 GetClosestNeighbour(Node node, Vector3 positon)
-    {
-        List<Node> neighbours = GetNeighbours(node);
-        float dist = Vector3.Distance(node.WorldPosition, positon);
-        Node targetNode = node;
-
-        foreach (Node neighbour in neighbours)
-        {
-            float nodeDistance = Vector3.Distance(neighbour.WorldPosition, positon);
-
-            if (nodeDistance < dist && neighbour.Walkable)
-            {
-                dist = nodeDistance;
-                targetNode = neighbour;
-            }
-        }
-
-        return targetNode.WorldPosition;
-    }
-
     public Node NodeFromWorldPoint(Vector3 worldPosition)
     {
         float nodeDiameter = nodeRadius * 2;
@@ -121,23 +89,5 @@ public class GridMesh : MonoBehaviour
         int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
 
         return grid[x, y];
-    }
-
-    public Node CloserNodeFromWorldPoint(Vector3 worldPosition)
-    {
-        float nodeDiameter = nodeRadius * 2;
-        float percentX = ((worldPosition.x + gridWorldSize.x / 2) - nodeRadius) / (gridWorldSize.x - nodeDiameter);
-        float percentY = ((worldPosition.z + gridWorldSize.y / 2) - nodeRadius) / (gridWorldSize.y - nodeDiameter);
-        percentX = Mathf.Clamp01(percentX);
-        percentY = Mathf.Clamp01(percentY);
-
-        int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
-        int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
-
-        Node node = grid[x, y];
-        if (Vector3.Distance(node.WorldPosition, worldPosition) < 0.5f)
-            return node;
-
-        return null;
     }
 }

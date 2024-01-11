@@ -4,23 +4,23 @@ public class Node
 {
     private bool walkable;
     public bool Static { get; set; }
-    public Vector3 WorldPosition { get; }
     public float NodeRadius { get; }
-
     public int GCost { get; set; }
     public int HCost { get; set; }
+    public int FCost { get => GCost + HCost; }
+    public Vector3 WorldPosition { get; }
     public Vector2Int GridPosition { get; set; }
     public Node Parent { get; set; }
-    public int FCost { get => GCost + HCost; }
+
     public bool Walkable 
     { 
         get => walkable;
         set => walkable = Static ? false : value;
     }
 
-    public Node(bool walkable, bool staticNode, Vector3 worldPosition, Vector2Int gridPosition, float nodeRadius)
+    public Node(bool walkable, Vector3 worldPosition, Vector2Int gridPosition, float nodeRadius)
     {
-        this.Static = staticNode;
+        this.Static = !walkable;
         this.Walkable = walkable;
         this.WorldPosition = worldPosition;
         this.GridPosition = gridPosition;
@@ -47,8 +47,4 @@ public class Node
 
         return 14 * distance.x + 10 * (distance.y - distance.x);
     }
-
-
-
-
 }

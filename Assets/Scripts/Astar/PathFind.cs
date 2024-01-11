@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,11 +85,6 @@ public class PathFind : MonoBehaviour
         yield return null;
     }
 
-    Vector3[] WorldPath(List<Node> path)
-    {
-        return path.Select(x => x.WorldPosition).ToArray();
-    }
-
     void RetracePath(Node startNode, Node endNode)
     {
         List<Node> path = new List<Node>();
@@ -101,13 +97,6 @@ public class PathFind : MonoBehaviour
         }
 
         path.Reverse();
-
-        if (transform.name == "Player")
-            grid.path = path;
-
-        Path = WorldPath(path);
+        Path = path.Select(x => x.WorldPosition).ToArray();
     }
-
-
-
 }

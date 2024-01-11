@@ -11,17 +11,19 @@ public class UnitBase : MonoBehaviour
     void Awake()
     {
         grid = FindFirstObjectByType<GridMesh>();
-        lastNode = GetNode();
+        lastNode = OnNodeStand();
     }
 
-    public Node GetNode()
+    public Node OnNodeStand()
     {
-        return grid.NotWalkableFromWorld(transform.position);
+        Node node = grid.NodeFromWorldPoint(transform.position);
+        node.Walkable = false;
+        return node;
     }
 
     private void UpdateNode()
     {
-        Node currentNode = grid.NotWalkableFromWorld(transform.position);
+        Node currentNode = OnNodeStand();
 
         if (currentNode != lastNode)
         {
