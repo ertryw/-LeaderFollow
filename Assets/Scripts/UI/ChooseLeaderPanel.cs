@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,7 +6,9 @@ public class ChooseLeaderPanel : MonoBehaviour
 {
     [SerializeField]
     private Button buttonUIPrefab;
+
     private LeaderController leader;
+    private List<Button> buttons = new List<Button>();
 
     public void SetLeader(GameObject unit)
     {
@@ -18,6 +21,16 @@ public class ChooseLeaderPanel : MonoBehaviour
         Destroy(leader);
     }
 
+    public void ResetButtons()
+    {
+        foreach (Button button in buttons)
+        {
+            Destroy(button.gameObject);
+        }
+
+        buttons.Clear();
+    }
+
     public void AddButton(UnitController unit)
     {
         var button  = Instantiate(buttonUIPrefab);
@@ -28,6 +41,8 @@ public class ChooseLeaderPanel : MonoBehaviour
             ResetLeader();
             SetLeader(unit.gameObject);
         });
+
+        buttons.Add(button);
     }
 
 }

@@ -64,6 +64,7 @@
     <Compile Include="Assets\Scripts\PathFind\Astar\AStar.cs" />
     <Compile Include="Assets\Scripts\UI\ChooseLeaderPanel.cs" />
     <Compile Include="Assets\Scripts\Scriptables\GameLimits.cs" />
+    <Compile Include="Assets\Scripts\Save\GameData.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Units\UnitBase.cs" />
     <Compile Include="Assets\Scripts\Units\UnitController.cs" />

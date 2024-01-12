@@ -43,6 +43,17 @@ public class UnitController : MonoBehaviour
         unit.RemovePathFound(OnPathFound);
     }
 
+    public UnitData GetData()
+    {
+        return stats.Data(transform, baseStamina, leader);
+    }
+
+    public void SetStats(UnitData data)
+    {
+        stats = new UnitStats(data);
+        baseStamina = stats.Stamina;
+    }
+
     public void SwitchToDefault()
     {
         leader = false;

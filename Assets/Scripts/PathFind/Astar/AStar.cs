@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using static IPathfinding;
 
@@ -7,6 +9,8 @@ using static IPathfinding;
 public class AStar : IPathfinding
 {
     private bool running;
+    private CancellationTokenSource token;
+
     private GridMesh grid;
     public event OnPathFound onPathFound;
 
@@ -20,6 +24,7 @@ public class AStar : IPathfinding
         if (running == true)
             return;
 
+        token = new CancellationTokenSource();
         FindPath(startPos, targetPos);
     }
 
@@ -47,7 +52,7 @@ public class AStar : IPathfinding
 
             openSet.Remove(node);
             closedSet.Add(node);
-
+         
             if (node == targetNode)
             {
                 onPathFound?.Invoke(RetracePath(startNode, targetNode));
