@@ -61,6 +61,7 @@ public class UnitController : MonoBehaviour
         rb.mass = 10;
 
         renderer.material.color = color;
+        StopAllCoroutines();
     }
 
     public void SwitchToLeader()
