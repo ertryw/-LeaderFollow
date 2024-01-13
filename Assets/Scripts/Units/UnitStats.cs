@@ -9,7 +9,7 @@ public class UnitStats
 
     public UnitStats(GameLimits gameLimits)
     {
-        Id = Random.Range(0, 100000);
+        Id = Random.Range(0, 100);
         Speed = Random.Range(gameLimits.speed.min, gameLimits.speed.max);
         Stamina = Random.Range(gameLimits.stamina.min, gameLimits.stamina.max);
         Mobility = Random.Range(gameLimits.mobility.min, gameLimits.mobility.max);

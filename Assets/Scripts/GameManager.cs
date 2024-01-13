@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -13,11 +11,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private ChooseLeaderPanel chooseLeaderPanel;
 
-    private string savePath = @"/save.data";
-
     public static GameManager Instance { get; private set; }
-    private List<UnitController> Units { get; set; }
-    private UnitController Player { get; set; }
+    public List<UnitController> Units { get; set; }
+    public UnitController Player { get; set; }
 
     private void Awake()
     {
@@ -44,17 +40,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void Save()
+    public void OnLoad(UnitData[] unitsData)
     {
-        UnitData[] unitsData = Units.Select(x => x.GetData()).ToArray();
-        SaveFileWithBinaryFormater(Application.persistentDataPath + savePath, unitsData);
-    }
 
-    public void Load()
-    {
-        UnitData[] unitsData = LoadFileWithBinaryFormater<UnitData[]>(Application.persistentDataPath + savePath);
-
-        foreach (UnitController unit in Units)
+        foreach (UnitController unit in GameManager.Instance.Units)
         {
             Destroy(unit.gameObject);
         }
@@ -81,29 +70,4 @@ public class GameManager : MonoBehaviour
             chooseLeaderPanel.AddButton(unit);
         }
     }
-
-    public void SaveFileWithBinaryFormater(string path, object objectToSave)
-    {
-        BinaryFormatter binaryFormatter = new BinaryFormatter();
-        FileStream file = File.Create(path);
-        binaryFormatter.Serialize(file, objectToSave);
-        file.Close();
-    }
-
-    public T LoadFileWithBinaryFormater<T>(string path) where T : class
-    {
-        try
-        {
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            FileStream file = File.Open(path, FileMode.Open);
-            T data = binaryFormatter.Deserialize(file) as T;
-            file.Close();
-            return data;
-        }
-        catch
-        {
-            return default(T);
-        }
-    }
-
 }
