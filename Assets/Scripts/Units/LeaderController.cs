@@ -9,6 +9,8 @@ public class LeaderController : MonoBehaviour
     public delegate void OnLead(Vector3 position);
     public static event OnLead onLead;
 
+    public static event UnitController.OnStaminaChange leaderStaminaChange;
+
     void Awake()
     {
         unit = GetComponent<UnitBase>();
@@ -19,18 +21,25 @@ public class LeaderController : MonoBehaviour
     private void OnEnable()
     {
         unit.onNodeChange += Lead;
+        unitController.onStaminaChange += StaminaChange;
         unitController.SwitchToLeader();
     }
 
     private void OnDisable()
     {
         unit.onNodeChange -= Lead;
+        unitController.onStaminaChange -= StaminaChange;
         unitController.SwitchToDefault();
     }
 
     private void Lead(Node prevNode, Node newNode)
     {
         onLead?.Invoke(prevNode.WorldPosition);
+    }
+
+    private void StaminaChange(float stamina)
+    {
+        leaderStaminaChange?.Invoke(stamina);
     }
 
     private void Update()

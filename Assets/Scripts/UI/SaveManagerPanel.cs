@@ -18,10 +18,10 @@ public class SaveManagerPanel : MonoBehaviour
     void Start()
     {
         savePath = Application.persistentDataPath + savePath;
-        CheckSave();       
+        CheckSaveFile();       
     }
 
-    private bool CheckSave()
+    private bool CheckSaveFile()
     {
         if (SaveExist(savePath))
         {
@@ -42,14 +42,14 @@ public class SaveManagerPanel : MonoBehaviour
 
     public async void Save()
     {
-        UnitData[] unitsData = GameManager.Instance.Units.Select(x => x.GetData()).ToArray();
+        UnitData[] unitsData = GameManager.Instance.Units.Select(x => x.Data).ToArray();
         await GameSave.Save(savePath, unitsData);
-        CheckSave();
+        CheckSaveFile();
     }
 
     public async void Load()
     {
-        if (CheckSave())
+        if (CheckSaveFile())
         {
             UnitData[] unitsData = await GameSave.Load<UnitData[]>(savePath);
             onLoad.Invoke(unitsData);

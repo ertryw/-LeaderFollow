@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance { get; private set; }
     public List<UnitController> Units { get; set; }
-    public UnitController Player { get; set; }
+    public UnitController Leader { get; set; }
 
     private void Awake()
     {
@@ -31,8 +31,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         Units = FindObjectsOfType<UnitController>().ToList();
-        Player = Units.FirstOrDefault();
-        chooseLeaderPanel.SetLeader(Player.gameObject);
+        SetLeader(Units.FirstOrDefault());
 
         foreach (UnitController unit in Units)
         {
@@ -40,10 +39,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void SetLeader(UnitController unit)
+    {
+        Leader = unit;
+        chooseLeaderPanel.SetLeader(unit.gameObject);
+    }
+
     public void OnLoad(UnitData[] unitsData)
     {
 
-        foreach (UnitController unit in GameManager.Instance.Units)
+        foreach (UnitController unit in Units)
         {
             Destroy(unit.gameObject);
         }
@@ -61,10 +66,7 @@ public class GameManager : MonoBehaviour
             unit.SetStats(unitData);
 
             if (unitData.leader)
-            {
-                Player = unit;
-                chooseLeaderPanel.SetLeader(unitObject);
-            }
+                SetLeader(unit);
 
             Units.Add(unit);
             chooseLeaderPanel.AddButton(unit);

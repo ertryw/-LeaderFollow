@@ -13,12 +13,12 @@ public class LeaderStaminaUI : MonoBehaviour
 
     private void OnEnable()
     {
-        GameEvents.onStaminaChange += OnStaminaChange;
+        LeaderController.leaderStaminaChange += OnStaminaChange;
     }
 
     private void OnDisable()
     {
-        GameEvents.onStaminaChange -= OnStaminaChange;
+        LeaderController.leaderStaminaChange -= OnStaminaChange;
     }
 
     private void OnStaminaChange(float stamina)

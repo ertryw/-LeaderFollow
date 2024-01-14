@@ -361,7 +361,6 @@
 "Assets/Scripts/PathFind/Astar/Node.cs"
 "Assets/Scripts/PathFind/IPathfinding.cs"
 "Assets/Scripts/Save/GameSave.cs"
-"Assets/Scripts/Scriptables/GameEvents.cs"
 "Assets/Scripts/Scriptables/GameLimits.cs"
 "Assets/Scripts/UI/ChooseLeaderPanel.cs"
 "Assets/Scripts/UI/LeaderStaminaUI.cs"

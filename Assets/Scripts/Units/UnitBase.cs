@@ -7,6 +7,7 @@ public class UnitBase : MonoBehaviour
     private Node lastNode;
     private IPathfinding pathFinding;
 
+    
     public delegate void OnNodeChange(Node prevNode, Node newNode);
     public event OnNodeChange onNodeChange;
 
@@ -52,7 +53,6 @@ public class UnitBase : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         UpdateNode();

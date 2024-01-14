@@ -7,8 +7,6 @@ public class UnitController : MonoBehaviour
     private LayerMask unwalkableMask;
     [SerializeField]
     private GameLimits gameLimits;
-    [SerializeField]
-    private GameEvents gameEvents;
 
     private bool leader;
     private bool found;
@@ -20,6 +18,9 @@ public class UnitController : MonoBehaviour
     private Color color;
     private new Renderer renderer;
     private float baseStamina;
+
+    public delegate void OnStaminaChange(float stamina);
+    public event OnStaminaChange onStaminaChange;
 
     private void Awake()
     {
@@ -43,10 +44,9 @@ public class UnitController : MonoBehaviour
         unit.RemovePathFound(OnPathFound);
     }
 
-    public UnitData GetData()
-    {
-        return stats.Data(transform, baseStamina, leader);
-    }
+    private void StaminaRegeneration() => stats.Stamina += 2 * Time.deltaTime;
+
+    public UnitData Data => stats.Data(transform, baseStamina, leader);
 
     public void SetStats(UnitData data)
     {
@@ -71,7 +71,7 @@ public class UnitController : MonoBehaviour
         rb.mass = 100000;
 
         renderer.material.color = Color.yellow;
-        gameEvents.ChangeStamina(stats.Stamina);
+        onStaminaChange?.Invoke(stats.Stamina);
     }
 
     public void OnPathFound(Vector3[] path)
@@ -101,19 +101,20 @@ public class UnitController : MonoBehaviour
 
     private void Move()
     {
-        if (leader && stats.Stamina > 0.0f)
+        if (stats.Stamina <= 0.0f)
+            return;
+
+        if (leader)
         {
             stats.Stamina -= 0.1f;
-            gameEvents.ChangeStamina(stats.Stamina);
+            onStaminaChange?.Invoke(stats.Stamina);
         }
-
-        if (stats.Stamina > 0.0f)
-            rb.velocity = transform.right * stats.Speed;
+    
+        rb.velocity = transform.right * stats.Speed;
     }
 
-    IEnumerator FollowPath(Vector3[] path)
+    private IEnumerator FollowPath(Vector3[] path)
     {
-
         coroutineRunning = true;
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
@@ -186,6 +187,6 @@ public class UnitController : MonoBehaviour
     private void Update()
     {
         if (!leader && stats.Stamina < baseStamina)
-            stats.Stamina += 2 * Time.deltaTime;
+            StaminaRegeneration();
     }
 }
