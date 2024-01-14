@@ -23,6 +23,7 @@ public class GridMesh : MonoBehaviour
         CreateGrid();
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
@@ -36,6 +37,7 @@ public class GridMesh : MonoBehaviour
             }
         }
     }
+#endif
 
     private void CreateGrid()
     {
